@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="TubeFlix — Filmes Dublados do Youtube 1080p." />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta property="og:title" content="TubeFlix — Filmes Dublados do Youtube 1080p" />
+  <meta property="og:description" content="Catálogo de filmes do YouTube com experiência de streaming: destaques com prévia em vídeo, busca e mais." />
+  <meta property="og:image" content="https://tube-flix.vercel.app/og-image.png" />
+  <meta property="og:url" content="https://tube-flix.vercel.app/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <title>TubeFlix — Filmes Dublados do Youtube 1080p</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="logo" href="./">
+      <span class="logo-title">Tube<span>Flix</span></span>
+      <span class="logo-tagline">Filmes Dublados do Youtube 1080p</span>
+    </a>
+    <input id="search" type="search" placeholder="Buscar por título, canal, categoria..." autocomplete="off" />
+    <nav class="menu">
+      <button id="menu-btn" class="menu-btn" aria-haspopup="true" aria-expanded="false">Categorias ▾</button>
+      <div id="menu-dropdown" class="menu-dropdown hidden"></div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="hero-slides" id="hero-slides"></div>
+      <div class="hero-info">
+        <h1 id="hero-title">Carregando...</h1>
+        <p id="hero-desc"></p>
+        <div class="hero-actions">
+          <button id="watch-btn" class="btn btn-primary">Assistir</button>
+          <button id="hero-share" class="btn btn-ghost">Compartilhar</button>
+          <button id="hero-youtube" class="btn btn-ghost">Abrir no YouTube</button>
+        </div>
+      </div>
+      <div class="hero-dots" id="hero-dots"></div>
+    </section>
+
+    <nav class="chips" id="chips" aria-label="Filtrar por categoria"></nav>
+
+    <section class="cat-page hidden" id="cat-page">
+      <div class="cat-head">
+        <a class="back-link" href="./">← Início</a>
+        <h2 id="cat-title"></h2>
+        <p id="cat-sub"></p>
+      </div>
+      <div class="cat-grid" id="cat-grid"></div>
+    </section>
+
+    <section class="catalog" aria-label="Catálogo de vídeos">
+      <div id="row-populares"></div>
+    </section>
+  </main>
+
+  <footer>
+    TubeFlix · Filmes Dublados do Youtube 1080p
+  </footer>
+
+  <div id="player-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-label="Player de vídeo">
+      <button id="close-modal" class="close" aria-label="Fechar">×</button>
+      <div class="modal-head"><h3 id="modal-title"></h3></div>
+      <div id="player-container"></div>
+      <div class="player-actions">
+        <button id="share-btn" class="btn btn-primary">Compartilhar</button>
+        <button id="open-youtube" class="btn btn-ghost">Abrir no YouTube</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

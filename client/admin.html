@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin - Catálogo</title>
+  <style>
+    :root{
+      --bg:#0a0a0f;--panel:#14141a;--line:#26262e;
+      --text:#f5f5f7;--muted:#9aa0aa;--accent:#e50914;--accent-hover:#ff1f2c;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;padding:32px 20px;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:860px;margin:0 auto}
+    h2{margin:0 0 4px;font-size:26px}
+    h2 span{color:var(--accent)}
+    p.hint{margin:0 0 20px;color:var(--muted);font-size:14px;line-height:1.5}
+    a.back{display:inline-block;margin-bottom:18px;color:var(--muted);text-decoration:none;font-size:14px}
+    a.back:hover{color:var(--text)}
+
+    .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+    .form-group{display:flex;gap:10px;flex-wrap:wrap}
+    input{padding:11px 14px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:#0d0d12;color:var(--text);font-family:inherit}
+    input:focus{outline:none;border-color:rgba(229,9,20,.65)}
+    input::placeholder{color:#5b616b}
+    button{padding:11px 20px;background:var(--accent);color:#fff;border:0;border-radius:8px;cursor:pointer;font-weight:700;font-size:14px;font-family:inherit;transition:background .2s}
+    button:hover{background:var(--accent-hover)}
+    .btn-secondary{background:transparent;border:1px solid var(--line)}
+    .btn-secondary:hover{background:rgba(255,255,255,.06)}
+
+    .token-row{margin-bottom:16px}
+    #admin-token{width:280px}
+    #new-id{width:220px}
+    #new-title{flex:1;min-width:240px}
+    #new-thumb{flex:1;min-width:260px}
+    #new-category{width:150px}
+    #new-description{flex:1;min-width:240px}
+
+    .list{margin-top:20px;display:flex;flex-direction:column;gap:10px}
+    .item{display:flex;align-items:center;gap:14px;padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+    .item-thumb{width:96px;aspect-ratio:16/9;object-fit:cover;border-radius:6px;background:#000}
+    .item-info{flex:1;min-width:0}
+    .item-info strong{display:block;font-size:14px}
+    .item-info small{display:block;color:var(--muted);font-size:12px;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .remove{background:transparent;border:1px solid var(--line);color:var(--muted);padding:8px 14px;font-weight:600;font-size:13px}
+    .remove:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+    .edit{background:transparent;border:1px solid var(--line);color:var(--text);padding:8px 14px;font-weight:600;font-size:13px}
+    .edit:hover{border-color:var(--accent);color:#fff;background:rgba(229,9,20,.18)}
+    .item-actions{display:flex;gap:8px}
+    .panel.editing{border-color:rgba(229,9,20,.55)}
+    #import-textarea{width:100%;min-height:140px;font-family:'Consolas','Courier New',monospace;font-size:12px;resize:vertical}
+    .check{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);cursor:pointer;padding:0 4px}
+    .check input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+    .feat-badge{color:#f5c518;font-weight:600}
+    .empty-state{padding:40px;text-align:center;color:var(--muted)}
+    #env-badge{position:fixed;top:14px;right:14px;z-index:99;padding:6px 14px;border-radius:999px;font-weight:700;font-size:12px;letter-spacing:.6px}
+    #env-badge.prod{background:rgba(229,9,20,.15);border:1px solid #e50914;color:#ff7b84}
+    #env-badge.local{background:rgba(46,204,113,.12);border:1px solid #2ecc71;color:#2ecc71}
+  </style>
+</head>
+<body>
+  <span id="env-badge"></span>
+  <div class="wrap">
+    <a class="back" href="./">← Voltar ao catálogo</a>
+    <h2>Admin do <span>Catálogo</span></h2>
+    <p class="hint">
+      Adicione ou remova IDs de vídeos do YouTube.
+      Em produção os dados são salvos no Redis configurado via variáveis de ambiente
+      (UPSTASH_REDIS_REST_URL e UPSTASH_REDIS_REST_TOKEN). Localmente são salvos em server/catalog.json.
+      Se o servidor tiver ADMIN_TOKEN configurado, informe o token abaixo.
+    </p>
+
+    <div class="panel">
+      <div class="form-group token-row">
+        <input id="admin-token" type="password" placeholder="Token de administrador (opcional)">
+      </div>
+      <div class="form-group">
+        <input id="new-id" placeholder="ID do YouTube (ex: dQw4w9WgXcQ)">
+        <input id="new-title" placeholder="Nome do filme (opcional - substitui o título do YouTube)">
+        <input id="new-thumb" placeholder="URL da thumbnail https://... (opcional)">
+        <input id="new-category" placeholder="Categoria">
+        <input id="new-year" placeholder="Ano (ex: 2019)" style="width:130px">
+        <input id="new-description" placeholder="Descrição curta do vídeo">
+        <label class="check"><input type="checkbox" id="new-featured"> <span>Destacar no topo (hero)</span></label>
+        <button id="add-btn">Adicionar</button>
+        <button id="cancel-btn" class="btn-secondary" style="display:none">Cancelar edição</button>
+        <button id="refresh-btn" class="btn-secondary">Atualizar lista</button>
+        <span style="flex:1"></span>
+        <button id="export-btn" class="btn-secondary">Exportar catálogo</button>
+        <button id="import-btn" class="btn-secondary">Importar catálogo</button>
+      </div>
+
+      <div id="import-box" style="display:none;margin-top:14px">
+        <p style="margin:0 0 8px;color:var(--muted);font-size:13px">
+          Cole abaixo o JSON exportado anteriormente. <strong style="color:var(--text)">Atenção:</strong> a importação substitui todo o catálogo atual.
+        </p>
+        <textarea id="import-textarea" placeholder='[{"id":"dQw4w9WgXcQ","title":"Meu filme","thumb":"","category":"Filmes","description":"..."}]'></textarea>
+        <div class="form-group" style="margin-top:10px">
+          <button id="confirm-import-btn">Confirmar importação</button>
+          <button id="cancel-import-btn" class="btn-secondary">Fechar</button>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <div class="list" id="ids-list"></div>
+  </div>
+
+  <script src="./admin.js"></script>
+  <script>
+    (function () {
+      var b = document.getElementById('env-badge');
+      if (!b) return;
+      var local = ['localhost', '127.0.0.1'].indexOf(location.hostname) > -1 || location.protocol === 'file:';
+      b.textContent = local ? 'AMBIENTE: LOCAL' : 'AMBIENTE: PRODUÇÃO';
+      b.classList.add(local ? 'local' : 'prod');
+    })();
+  </script>
+</body>
+</html>
