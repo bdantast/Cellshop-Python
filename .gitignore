@@ -39,3 +39,6 @@ Thumbs.db
 # Local config
 .env
 .env.local
+# Outro projeto Python (raiz)
+/main.py
+/README.md
